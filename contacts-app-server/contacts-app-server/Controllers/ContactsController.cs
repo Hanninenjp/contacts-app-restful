@@ -3,42 +3,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using contacts_app_server.Models;
+using contacts_app_server.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace contacts_app_server.Controllers
 {
+    [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
     public class ContactsController : Controller
     {
-        //Development time test storage
-        //Consider implementing necessary get and set methods for the storage
-        private static Contacts _contacts = new Contacts();
 
-        //private static List<Contact> _contacts = new List<Contact>();
-
+        private static ContactsService _contactsService = new ContactsService();
         
         // GET: api/contacts
         [HttpGet]
         public IActionResult Get()
         {
-            return new JsonResult(_contacts.contactsList);
+            var result = _contactsService.GetContacts();
+            //HTTP 200 OK
+            return new JsonResult(result);
         }
 
         // GET api/contacts/id
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            //Development version identifies contact with index only!
-            //This needs to be reconsidered!
-            //Action result for invalid id needs to be checked!
-            if (_contacts.contactsList.Count <= id)
+            var result = _contactsService.GetContact(id);
+            if (result == null)
             {
-                //return BadRequest("Invalid");
+                //HTTP 404 Not Found
                 return NotFound();
             }
-            return new JsonResult(_contacts.contactsList.ElementAt(id));
+            else
+            {
+                //HTTP 200 OK
+                return new JsonResult(result);
+            }
         }
 
         // POST api/contacts
@@ -47,44 +50,60 @@ namespace contacts_app_server.Controllers
         {
             if (contact == null)
             {
+                //HTTP 400 Bad Request
                 return BadRequest("Invalid");
             }
-            _contacts.contactsList.Add(contact);
-            return new JsonResult(contact);
+            var result = _contactsService.CreateContact(contact);
+            //HTTP 200 OK
+            //Returns created contact, this may be redundant
+            return new JsonResult(result);
         }
 
         // PUT api/contacts/id
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] Contact contact)
         {
-            //Development version identifies contact with index only!
-            //This needs to be reconsidered!
-            //Action result for invalid id needs to be checked!
             if (contact == null)
             {
+                //HTTP 400 Bad Request
                 return BadRequest("Invalid");
-            } else if (_contacts.contactsList.Count <= id)
+                //Note: empty JSON {} in the request body is not rejected by the parser, but target object is created with default values
+                //In the present implementation {} in the request body has the effect that contact is updated and the result will be (in JSON)
+                //{ "firstName":"First","lastName":"Last","phone":"Phone","streetAddress":"Address","city":"City"}
+            }
+            var result = _contactsService.UpdateContact(id, contact);
+            if (result == null)
             {
+                //HTTP 404 Not Found
                 return NotFound();
             }
-            _contacts.contactsList[id] = contact;
-            return new JsonResult(contact);
+            else
+            {
+                //HTTP 200 OK
+                //Returns updated contact, this may be redundant
+                return new JsonResult(result);
+            }
         }
 
         // DELETE api/contacts/id
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            //Development version identifies contact with index only!
-            //This needs to be reconsidered!
-            //Action result for invalid id needs to be checked!
-            if (_contacts.contactsList.Count <= id)
+            var result = _contactsService.DeleteContact(id);
+            if (result == null)
             {
-                //return BadRequest("Invalid");
+                //HTTP 404 Not Found
                 return NotFound();
             }
-            _contacts.contactsList.RemoveAt(id);
-            return new NoContentResult();
+            else
+            {
+                //HTTP 200 OK
+                //Returns deleted contact, this may be redundant
+                //return new JsonResult(result);
+
+                //HTTP 204 No Content
+                return new NoContentResult();
+            }
         }
     }
 }
