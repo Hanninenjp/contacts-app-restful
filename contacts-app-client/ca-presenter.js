@@ -39,8 +39,8 @@ contactsApp.presenter = (function () {
             var contact = contactsApp.contactFormView.getContact();
             contactsApp.contactFormView.resetForm();
             contactsApp.contactFormView.setCreateMode();
-            contactsApp.attributes.setCanDelete(true);
             contactsApp.contacts.updateContact(contact, index, contactsUpdated);
+            contactsApp.attributes.setCanDelete(true);
             return false;
         },
         deleteContact: function (index) {

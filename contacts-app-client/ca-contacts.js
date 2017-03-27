@@ -6,26 +6,20 @@ contactsApp.contacts = (function () {
 
     var contacts = [];
 
-    //API implementation test
-    function apiContactsUpdateFailed(){
-        //Development time logging
-        console.log("Updating contacts failed!");
-        //Add callback to presenter!!!
-        //Presenter should notify that contacts loading or updating failed and perhaps prevent further updates!
-    }
-    //End API implementation test
-
     return {
         createContact: function(contact, contactsUpdated){
             if(contactsApp.configuration.isContactApiEnabled()){
                 contactsApp.contactApi.createContact(contact)
                     //Alternatively
-                    //.done(function(data, status, jqxhr) {apiContactCreated(data, status, jqxhr, contactsUpdated)})
+                    //.done(function(data, status, jqxhr) {apiContactCreated(data, status, jqxhr, contactsUpdated)}) + "private" function apiContactCreated
                     .done(function(data){
                         contacts.push(data);
                         contactsUpdated(contacts);
                     })
-                    .fail(apiContactsUpdateFailed); //Alternatively, function could be implemented here!!!
+                    .fail(function() {
+                        //Error handling could be improved
+                        alert("Updating contacts failed!");
+                    });
             }
             else{
                 contacts.push(contact);
@@ -40,7 +34,10 @@ contactsApp.contacts = (function () {
                         contacts[index] = data;
                         contactsUpdated(contacts);
                     })
-                    .fail(apiContactsUpdateFailed);
+                    .fail(function() {
+                        //Error handling could be improved
+                        alert("Updating contacts failed!");
+                    });
             }
             else{
                 contacts[index] = contact;
@@ -56,7 +53,10 @@ contactsApp.contacts = (function () {
                         contacts.splice(index, 1);
                         contactsUpdated(contacts);
                     })
-                    .fail(apiContactsUpdateFailed);
+                    .fail(function(){
+                        //Error handling could be improved
+                        alert("Updating contacts failed!");
+                    });
             }
             else{
                 contacts.splice(index, 1);
@@ -69,11 +69,6 @@ contactsApp.contacts = (function () {
             //Uses locally cached contacts
             return contacts[index];
         },
-        getContacts: function (){
-            //Get contacts array
-            //Obsolete!!!
-            return contacts;
-        },
         loadContacts: function(contactsUpdated){
             if(contactsApp.configuration.isContactApiEnabled()){
                 contactsApp.contactApi.getContacts()
@@ -81,7 +76,10 @@ contactsApp.contacts = (function () {
                         contacts = data;
                         contactsUpdated(contacts);
                     })
-                    .fail(apiContactsUpdateFailed);
+                    .fail(function(){
+                        //Error handling could be improved!
+                        alert("Loading contacts failed!");
+                    });
             }
             else{
                 contacts = contactsApp.contactStore.loadContacts();
