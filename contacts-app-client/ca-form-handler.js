@@ -6,53 +6,45 @@ contactsApp.contactFormView = (function(){
 
     return{
         validateForm: function(){
-            var form = document.getElementById("contactForm");
+            var form = document.getElementById("ca-contact-form");
             return form.reportValidity();
         },
         resetForm: function(){
-            var form = document.getElementById("contactForm");
+            var form = document.getElementById("ca-contact-form");
             form.reset();
         },
         getContact: function(){
-            var form = document.getElementById("contactForm");
             var contact = contactsApp.contact(
-                form.elements["contactFirstName"].value,
-                form.elements["contactLastName"].value,
-                form.elements["contactPhone"].value,
-                form.elements["contactAddress"].value,
-                form.elements["contactCity"].value
+                document.getElementById("ca-contact-form-first-name").value,
+                document.getElementById("ca-contact-form-last-name").value,
+                document.getElementById("ca-contact-form-phone").value,
+                document.getElementById("ca-contact-form-street-address").value,
+                document.getElementById("ca-contact-form-city").value
             );
             return contact;
         },
         setContact: function(contact){
-            var form = document.getElementById("contactForm");
-            form.elements["contactFirstName"].value = contact.firstName;
-            form.elements["contactLastName"].value = contact.lastName;
-            form.elements["contactPhone"].value = contact.phone;
-            form.elements["contactAddress"].value = contact.streetAddress;
-            form.elements["contactCity"].value = contact.city;
+            document.getElementById("ca-contact-form-first-name").value = contact.firstName;
+            document.getElementById("ca-contact-form-last-name").value = contact.lastName;
+            document.getElementById("ca-contact-form-phone").value = contact.phone;
+            document.getElementById("ca-contact-form-street-address").value = contact.streetAddress;
+            document.getElementById("ca-contact-form-city").value = contact.city;
         },
         setEditMode: function(index){
-            var form = document.getElementById("contactForm");
-            //Accessing form, fieldset legend through directly through form does not work as expected
-            var legend = document.getElementById("contactLegend");
-            legend.innerHTML = "Edit contact";
-            form.elements["contactFormActionButton"].value = "Save";
-            form.elements["contactFormActionButton"].onclick = function(){
-                //alert("contactFormView:editMode:onclick");
+            document.getElementById("ca-contact-form-title-text").innerHTML = "Edit contact";
+            document.getElementById("ca-contact-form-action-button").innerHTML = "Save";
+            document.getElementById("ca-contact-form-action-button").onclick = function(){
                 contactsApp.presenter.updateContact(index);
             };
         },
         setCreateMode: function(){
-            var form = document.getElementById("contactForm");
-            var legend = document.getElementById("contactLegend");
-            legend.innerHTML = "Create contact";
-            form.elements["contactFormActionButton"].value = "Create";
-            form.elements["contactFormActionButton"].onclick = function(){
-                //alert("contactFormView:createMode:onclick");
+            document.getElementById("ca-contact-form-title-text").innerHTML = "Create contact";
+            document.getElementById("ca-contact-form-action-button").innerHTML = "Create";
+            document.getElementById("ca-contact-form-action-button").onclick = function(){
                 contactsApp.presenter.createContact();
             };
         }
+
     };
 
 })();
